@@ -99,7 +99,7 @@ function StressTest() {
     
     try {
       // Replace with your actual API endpoint
-      const response = await fetch('YOUR_API_ENDPOINT/predict', {
+      const response = await fetch('http://localhost:8000/api/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
