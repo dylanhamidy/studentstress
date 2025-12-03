@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 type Language = 'en' | 'ko';
 
 interface QuestionnaireData {
@@ -99,7 +101,7 @@ function StressTest() {
     
     try {
       // Replace with your actual API endpoint
-      const response = await fetch('http://localhost:8000/api/predict', {
+      const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
