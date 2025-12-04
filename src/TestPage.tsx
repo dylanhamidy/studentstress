@@ -30,6 +30,8 @@ function StressTest() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuestionnaireData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hoveredAnswer, setHoveredAnswer] = useState<number | null>(null);
+  const [isLangHovered, setIsLangHovered] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
   const questions = {
@@ -98,8 +100,7 @@ function StressTest() {
     setIsSubmitting(true);
     
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('YOUR_API_ENDPOINT/predict', {
+        const response = await fetch('YOUR_API_ENDPOINT/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,6 +151,8 @@ function StressTest() {
       <div style={{ padding: '40px 20px', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
         <button
           onClick={() => setLang(lang === 'en' ? 'ko' : 'en')}
+          onMouseEnter={() => setIsLangHovered(true)}
+          onMouseLeave={() => setIsLangHovered(false)}
           style={{
             position: 'fixed',
             top: '20px',
@@ -157,17 +160,19 @@ function StressTest() {
             padding: '8px 16px',
             fontSize: '14px',
             cursor: 'pointer',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ddd',
+            backgroundColor: isLangHovered ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
             borderRadius: '6px',
-            zIndex: 1000
+            zIndex: 1000, 
+            transition: 'all 0.2s ease'
           }}
         >
           {lang === 'en' ? '한국어로 보기' : 'View in English'}
         </button>
 
-        <h1 style={{ color: '#333', marginBottom: '20px' }}>{resultInfo.title}</h1>
-        <p style={{ color: '#666', fontSize: '18px', marginBottom: '40px' }}>{resultInfo.desc}</p>
+        <h1 style={{ color: 'var(--text-primary)', marginBottom: '20px' }}>{resultInfo.title}</h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '18px', marginBottom: '40px' }}>{resultInfo.desc}</p>
         
         <button
           onClick={resetTest}
@@ -176,17 +181,11 @@ function StressTest() {
             fontSize: '16px',
             fontWeight: '600',
             cursor: 'pointer',
-            backgroundColor: '#ff9955',
-            color: 'white',
+            backgroundColor: 'var(--accent)',
+            color: '#fff',
             border: 'none',
             borderRadius: '8px',
             transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#ff8c42';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#ff9955';
           }}
         >
           {lang === 'en' ? 'Take Test Again' : '다시 테스트하기'}
@@ -203,7 +202,7 @@ function StressTest() {
         alignItems: 'center',
         minHeight: '100vh',
         fontSize: '20px',
-        color: '#666'
+        color: 'var(--text-secondary)'
       }}>
         {lang === 'en' ? 'Analyzing your responses...' : '응답을 분석하는 중...'}
       </div>
@@ -214,6 +213,8 @@ function StressTest() {
     <div style={{ padding: '40px 20px', maxWidth: '700px', margin: '0 auto' }}>
       <button
         onClick={() => setLang(lang === 'en' ? 'ko' : 'en')}
+        onMouseEnter={() => setIsLangHovered(true)}
+        onMouseLeave={() => setIsLangHovered(false)}
         style={{
           position: 'fixed',
           top: '20px',
@@ -221,10 +222,11 @@ function StressTest() {
           padding: '8px 16px',
           fontSize: '14px',
           cursor: 'pointer',
-          backgroundColor: '#f0f0f0',
-          border: '1px solid #ddd',
+          backgroundColor: isLangHovered ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border-color)',
           borderRadius: '6px',
-          zIndex: 1000
+          zIndex: 1000, 
         }}
       >
         {lang === 'en' ? '한국어로 보기' : 'View in English'}
@@ -235,62 +237,72 @@ function StressTest() {
         <div style={{
           width: '100%',
           height: '8px',
-          backgroundColor: '#e0e0e0',
+          backgroundColor: 'var(--border-color)',
           borderRadius: '4px',
           overflow: 'hidden'
         }}>
           <div style={{
             width: `${progress}%`,
             height: '100%',
-            backgroundColor: '#ff9955',
+            backgroundColor: 'var(--accent)',
             transition: 'width 0.3s ease'
           }} />
         </div>
-        <p style={{ textAlign: 'center', marginTop: '10px', color: '#666', fontSize: '14px' }}>
+        <p style={{ textAlign: 'center', marginTop: '10px', color: 'var(--text-secondary)', fontSize: '14px' }}>
           {lang === 'en' ? `Question ${currentQuestion + 1} of ${totalQuestions}` : `질문 ${currentQuestion + 1} / ${totalQuestions}`}
         </p>
       </div>
 
       {/* Question */}
-      <h2 style={{ color: '#333', marginBottom: '30px', textAlign: 'center' }}>
+      <h2 style={{ color: 'var(--text-primary)', marginBottom: '30px', textAlign: 'center' }}>
         {currentQ.text}
       </h2>
 
       {/* Answer options */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {Array.from({ length: currentQ.range[1] - currentQ.range[0] + 1 }, (_, i) => {
-          const value = currentQ.range[0] + i;
-          const label = currentQ.labels?.[i] || value.toString();
-          
-          return (
-            <button
-              key={value}
-              onClick={() => handleAnswer(value)}
-              style={{
-                padding: '16px 24px',
-                fontSize: '16px',
-                cursor: 'pointer',
-                backgroundColor: 'white',
-                color: '#333',
-                border: '2px solid #ddd',
-                borderRadius: '8px',
-                transition: 'all 0.2s ease',
-                textAlign: 'left'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#fff5f0';
-                e.currentTarget.style.borderColor = '#ff9955';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'white';
-                e.currentTarget.style.borderColor = '#ddd';
-              }}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
+<div style={{
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '14px',
+  marginTop: '20px'
+}}>
+  {Array.from({ length: currentQ.range[1] - currentQ.range[0] + 1 }, (_, i) => {
+    const value = currentQ.range[0] + i;
+    const label = currentQ.labels?.[i] || value.toString();
+
+    // Detect dark mode
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    return (
+      <button
+        key={value}
+        onClick={() => handleAnswer(value)}
+        onMouseEnter={() => setHoveredAnswer(value)}
+        onMouseLeave={() => setHoveredAnswer(null)}
+        style={{
+          width: '100%',
+          padding: '18px 22px',
+          fontSize: '16px',
+          fontWeight: 500,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          backgroundColor: hoveredAnswer === value ? (isDarkMode ? '#333' : '#fff5f0') : 'var(--bg-primary)',
+          color: hoveredAnswer === value ? (isDarkMode ? '#ffffff' : '#000000') : 'var(--text-primary)',
+          border: `2px solid ${hoveredAnswer === value ? 'var(--accent)' : 'var(--border-color)'}`,
+          boxShadow: hoveredAnswer === value
+            ? '0 6px 15px rgba(0,0,0,0.1)'
+            : '0 2px 4px rgba(0,0,0,0.05)',
+          transform: hoveredAnswer === value ? 'scale(1.02)' : 'scale(1)',
+          transition: 'all 0.25s ease',
+          textAlign: 'center',
+        }}
+      >
+        {label}
+      </button>
+    );
+  })}
+</div>
+
+
 
       {/* Back button */}
       {currentQuestion > 0 && (
@@ -301,9 +313,9 @@ function StressTest() {
             padding: '10px 20px',
             fontSize: '14px',
             cursor: 'pointer',
-            backgroundColor: '#f0f0f0',
-            color: '#333',
-            border: '1px solid #ddd',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
             borderRadius: '6px',
             display: 'block',
             margin: '30px auto 0'

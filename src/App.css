@@ -1,3 +1,35 @@
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --text-primary: #213547;
+  --text-secondary: #888;
+  --border-color: #e0e0e0;
+  --accent: #ff9955;
+  --accent-hover: #ff8c42;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+    --accent: #ff9955;
+    --accent-hover: #ff8c42;
+  }
+  
+  body {
+    background-color: var(--bg-primary);
+  }
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -11,11 +43,13 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em var(--logo-vite-glow));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em var(--logo-react-glow));
 }
 
 @keyframes logo-spin {
@@ -38,5 +72,5 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: var(--text-secondary);
 }
